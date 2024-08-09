@@ -1,0 +1,10 @@
+{
+    "model_code_path": "/home/zhonghuihang/pythoncode/vison/rcnn/train.py",
+    "model_path": "/home/zhonghuihang/pythoncode/vison/rcnn/fasterrcnn_voc_model.pth",
+    "onnx_path": "/home/zhonghuihang/pythoncode/vison/rcnn/rcnn.onnx",
+    "input_size": [224, 224],
+    "batch_size": 1,
+    "input_names": ["images"],
+    "output_names": ["output"]
+}
+

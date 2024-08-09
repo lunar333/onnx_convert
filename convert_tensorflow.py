@@ -1,21 +1,32 @@
 import os
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import onnx
 import tf2onnx
 import tensorflow as tf
+import paddle
+import paddle.nn as pnn
 import subprocess
-import onnx
+import mindspore
+import mindspore.nn as mnn
+import numpy as np
+from mindspore import Tensor, context
+from mindspore.train.serialization import load_checkpoint, load_param_into_net, export
+
 def export_model_to_onnx(model, dummy_input, model_path, onnx_path, input_names=['input'], output_names=['output'], opset_version=11, framework='pytorch'):
     """
     导出模型为 ONNX 格式
 
     参数:
-    model (torch.nn.Module 或 tf.keras.Model 或 paddle.nn.Layer): 模型实例
+    model (torch.nn.Module 或 tf.keras.Model 或 paddle.nn.Layer 或 mindspore.nn.Cell): 模型实例
     dummy_input (torch.Tensor 或 None): PyTorch 模型的示例输入 (对于 TensorFlow 和 PaddlePaddle 为 None)
-    model_path (str): 模型参数文件路径 (.pt, .h5, .pdparams)
+    model_path (str): 模型参数文件路径 (.pt, .h5, .pdparams, .ckpt)
     onnx_path (str): 导出 ONNX 模型文件路径 (.onnx)
     input_names (list of str): 输入节点名称
     output_names (list of str): 输出节点名称
     opset_version (int): ONNX opset 版本
-    framework (str): 模型框架 ('pytorch', 'tensorflow', 'paddlepaddle')
+    framework (str): 模型框架 ('pytorch', 'tensorflow', 'paddlepaddle', 'mindspore')
     """
     if framework == 'pytorch':
         # 加载模型参数
@@ -48,8 +59,23 @@ def export_model_to_onnx(model, dummy_input, model_path, onnx_path, input_names=
             "--opset_version", str(opset_version)
         ], check=True)
 
+    elif framework == 'mindspore':
+        # 加载 MindSpore 模型
+        context.set_context(mode=context.GRAPH_MODE, device_target="CPU")
+        load_param_into_net(model, load_checkpoint(model_path))
+        input_tensor = Tensor(dummy_input)
+
+        # 导出模型
+        export(model, input_tensor, file_name=onnx_path.replace('.onnx', ''), file_format='ONNX')
+
     else:
-        raise ValueError("Unsupported framework. Please choose 'pytorch', 'tensorflow', or 'paddlepaddle'.")
+        raise ValueError("Unsupported framework. Please choose 'pytorch', 'tensorflow', 'paddlepaddle', or 'mindspore'.")
+
+    # 加载和检查导出的 ONNX 模型
+    onnx_model = onnx.load(onnx_path)
+    onnx.checker.check_model(onnx_model)
+    print("ONNX 模型导出成功，路径为:", onnx_path)
+    print(onnx.helper.printable_graph(onnx_model.graph))
 
     # 加载和检查导出的 ONNX 模型
     onnx_model = onnx.load(onnx_path)

@@ -8,6 +8,11 @@ import tensorflow as tf
 import paddle
 import paddle.nn as pnn
 import subprocess
+import mindspore
+import mindspore.nn as mnn
+import numpy as np
+from mindspore import Tensor, context
+from mindspore.train.serialization import load_checkpoint, load_param_into_net, export
 
 def export_model_to_onnx(model, dummy_input, model_path, onnx_path, input_names=['input'], output_names=['output'], opset_version=11, framework='pytorch'):
     """
@@ -53,6 +58,15 @@ def export_model_to_onnx(model, dummy_input, model_path, onnx_path, input_names=
             "--save_file", onnx_path,
             "--opset_version", str(opset_version)
         ], check=True)
+
+    elif framework == 'mindspore':
+        # 加载 MindSpore 模型
+        context.set_context(mode=context.GRAPH_MODE, device_target="CPU")
+        load_param_into_net(model, load_checkpoint(model_path))
+        input_tensor = Tensor(dummy_input)
+
+        # 导出模型
+        export(model, input_tensor, file_name=onnx_path.replace('.onnx', ''), file_format='ONNX')
 
     else:
         raise ValueError("Unsupported framework. Please choose 'pytorch', 'tensorflow', or 'paddlepaddle'.")

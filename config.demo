@@ -1,0 +1,41 @@
+{
+    "model_code_path": "/home/zhonghuihang/pythoncode/YOLO-v5",
+    "model_path": "/home/zhonghuihang/pythoncode/onnx/yolov5_models/yolov5s.pt",
+    "onnx_path": "/home/zhonghuihang/pythoncode/onnx/yolov5_models/yolov5s.onnx",
+    "input_size": [640, 640],
+    "batch_size": 1,
+    "input_names": ["images"],
+    "output_names": ["output"]
+}
+
+// {
+//     "model_code_path": "/home/zhonghuihang/pythoncode/resnet",
+//     "model_path": "/home/zhonghuihang/pythoncode/resnet/resnet_cifar10_model.pth",
+//     "onnx_path": "/home/zhonghuihang/pythoncode/resnet/resnet.onnx",
+//     "input_size": [640, 640],
+//     "batch_size": 1,
+//     "input_names": ["images"],
+//     "output_names": ["output"]
+// }
+
+{
+    "model_code_path": "/home/zhonghuihang/pythoncode/vison/vgg",
+    "model_path": "/home/zhonghuihang/pythoncode/vison/vgg/vgg_cifar10_model.pth",
+    "onnx_path": "/home/zhonghuihang/pythoncode/vison/vgg/vgg.onnx",
+    "input_size": [224, 224],
+    "batch_size": 1,
+    "input_names": ["images"],
+    "output_names": ["output"]
+}
+{
+    "model_code_path": "/home/zhonghuihang/pythoncode/vison/rcnn",
+    "model_path": "/home/zhonghuihang/pythoncode/vison/rcnn/fasterrcnn_voc_model.pth",
+    "onnx_path": "/home/zhonghuihang/pythoncode/vison/rcnn/rcnn.onnx",
+    "input_size": [224, 224],
+    "batch_size": 1,
+    "input_names": ["images"],
+    "output_names": ["output"]
+}
+
+
+
